@@ -8,6 +8,7 @@ class usersapi:
 
     def post_user(self, user_data):
         return self.api_session.post(f"{self.base_url}/users", json=user_data)
+    
     def put_user(self, user_id, user_data):
         return self.api_session.put(f"{self.base_url}/users/{user_id}", json=user_data)
       
