@@ -1,9 +1,9 @@
 import pytest, requests, json, logging
-from jsonschema import ValidationError, validate
+from jsonschema import ValidationError, validate, FormatChecker
 from schemas.user_schema import user_schema
 from schemas.post_user_schema import put_user_schema
 from api.users_api import UsersApi
-from utils.assertions import assert_status_code
+from utils.assertions import assert_status_code, assert_json_content_type, assert_type
 
 
 
@@ -18,11 +18,12 @@ from utils.assertions import assert_status_code
 def test_user_schema_validation(base_url, api_session, user_id, expected_status):
     user_api = UsersApi(base_url, api_session)
     response = user_api.get_user(user_id)
-    assert response.status_code == expected_status, f"Expected status code {expected_status}, but got {response.status_code}"
+    assert_status_code(response, expected_status)
+    assert_json_content_type(response)
     user_data = response.json()
     
     # Validate the user data against the schema
-    validate(instance=user_data, schema=user_schema)
+    validate(instance=user_data, schema=user_schema, format_checker=FormatChecker())
 
 @pytest.mark.parametrize("user_id, expected_status", [(0,404),(99999,404), ("a",404), ("b", 404), ("abcd", 404)])
 
@@ -30,7 +31,7 @@ def test_user_negative_status(base_url, api_session, user_id, expected_status):
     user_api = UsersApi(base_url, api_session) 
     response = user_api.get_user(user_id)
     assert_status_code(response,expected_status)
-    assert response.status_code == expected_status, f"Expected status code {expected_status}, but got {response.status_code}"
+    assert_json_content_type(response)
 
 
 def test_get_all_users(base_url, api_session,):
@@ -38,31 +39,33 @@ def test_get_all_users(base_url, api_session,):
     user_api = UsersApi(base_url, api_session)
     response=user_api.get_users()
     response_list = response.json()
-    assert_status_code(response,200), f"Expected status code 200, but got {response.status_code}"
-    assert isinstance(response_list, list), f"Expected Type List, but got type {type(response_list)}"
+    assert_status_code(response,200)
+    assert_json_content_type(response)
+    assert_type(response_list, list)
     assert len(response_list) == expected_length, f"Expected {expected_length} users but got {len(response_list)} users instead"
     for item in response_list:
-        validate(instance=item,schema= user_schema)
+        validate(instance=item,schema= user_schema,format_checker=FormatChecker()) #email checked by FormatChecker()
         print(f"validation for {item["id"]} complete") 
 
 @pytest.mark.parametrize("file_path", [("user.json"), ("post_user.json"), ("wrong_user.json")])
 
-def test_user_post(base_url,api_session,file_path, user_payload):
+def test_user_post(base_url,api_session,file_path, user_payload_mark):
     user_api= UsersApi(base_url, api_session)
-    payload=user_payload #fixture in conftest.py, file_path passed
+    payload=user_payload_mark #fixture in conftest.py, file_path passed
     response=user_api.post_user(payload)
     assert_status_code(response,201)
+    assert_json_content_type(response)
     data=response.json()
 
     if file_path=="user.json":
-        validate(instance=data, schema=user_schema)
+        validate(instance=data, schema=user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
 
     if file_path=="post_user.json":
-        validate(instance=data, schema=put_user_schema)
+        validate(instance=data, schema=put_user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
 
     if file_path=="wrong_user.json":
         with pytest.raises(ValidationError):
-            validate(instance=data, schema=put_user_schema)
+            validate(instance=data, schema=put_user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
 
     highest_user_response=user_api.get_users()
     assert_status_code(highest_user_response,200)

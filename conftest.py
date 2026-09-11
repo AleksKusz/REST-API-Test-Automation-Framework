@@ -15,9 +15,14 @@ def api_session():
     yield api_session
     api_session.close()
 
+@pytest.fixture
+def user_payload_mark(file_path):
+    with open(f"test_data/{file_path}") as file:
+            payload = json.load(file)
+            return payload
 
 @pytest.fixture
-def user_payload(file_path):
-    with open(f"test_data/{file_path}") as file:
+def user_payload():
+    with open(f"test_data/user.json") as file:
             payload = json.load(file)
             return payload
