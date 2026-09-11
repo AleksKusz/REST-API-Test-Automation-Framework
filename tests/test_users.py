@@ -1,7 +1,7 @@
 import pytest, requests, json, logging
 from jsonschema import ValidationError, validate
 from schemas.user_schema import user_schema
-from schemas.put_user_schema import put_user_schema
+from schemas.post_user_schema import put_user_schema
 from api.users_api import UsersApi
 from utils.assertions import assert_status_code
 
@@ -45,7 +45,7 @@ def test_get_all_users(base_url, api_session,):
         validate(instance=item,schema= user_schema)
         print(f"validation for {item["id"]} complete") 
 
-@pytest.mark.parametrize("file_path", [("user.json"), ("put_user.json"), ("put_wrong_user.json")])
+@pytest.mark.parametrize("file_path", [("user.json"), ("post_user.json"), ("wrong_user.json")])
 
 def test_user_post(base_url,api_session,file_path):
     user_api= UsersApi(base_url, api_session)
@@ -59,10 +59,10 @@ def test_user_post(base_url,api_session,file_path):
     if file_path=="user.json":
         validate(instance=data, schema=user_schema)
 
-    if file_path=="put_user.json":
+    if file_path=="post_user.json":
         validate(instance=data, schema=put_user_schema)
 
-    if file_path=="put_wrong_user.json":
+    if file_path=="wrong_user.json":
         with pytest.raises(ValidationError):
             validate(instance=data, schema=put_user_schema)
 
