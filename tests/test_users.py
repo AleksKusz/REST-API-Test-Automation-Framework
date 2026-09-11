@@ -22,7 +22,7 @@ def test_user_schema_validation(base_url, api_session, user_id, expected_status)
     assert_json_content_type(response)
     user_data = response.json()
     
-    # Validate the user data against the schema
+    #Validate the user data against the schema
     validate(instance=user_data, schema=user_schema, format_checker=FormatChecker())
 
 @pytest.mark.parametrize("user_id, expected_status", [(0,404),(99999,404), ("a",404), ("b", 404), ("abcd", 404)])
@@ -121,6 +121,12 @@ def test_user_delete(base_url, api_session,user_id):
     user_api=UsersApi(base_url, api_session)
     response=user_api.delete_user(user_id)
     assert_status_code(response, 200)
+
+@pytest.mark.parametrize("params", [{"username": "Bret"}]) 
+def test_get_param_user(base_url, api_session,params):
+    user_api=UsersApi(base_url, api_session)
+    response=user_api.get_users(params=params) #can search for any value using params value
+    print(response.json())
 
 
 

@@ -6,8 +6,8 @@ class UsersApi:
     def get_user(self, user_id):
         return self.api_session.get(f"{self.base_url}users/{user_id}")
 
-    def get_users(self):
-        return self.api_session.get(f"{self.base_url}users/")
+    def get_users(self, params=None):
+        return self.api_session.get(f"{self.base_url}users/", params=params)
 
 
     def post_user(self, user_data):
