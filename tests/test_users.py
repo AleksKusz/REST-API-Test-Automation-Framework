@@ -47,11 +47,9 @@ def test_get_all_users(base_url, api_session,):
 
 @pytest.mark.parametrize("file_path", [("user.json"), ("post_user.json"), ("wrong_user.json")])
 
-def test_user_post(base_url,api_session,file_path):
+def test_user_post(base_url,api_session,file_path, user_payload):
     user_api= UsersApi(base_url, api_session)
-    with open(f"test_data/{file_path}") as file:
-        payload = json.load(file)
-
+    payload=user_payload #fixture in conftest.py, file_path passed
     response=user_api.post_user(payload)
     assert_status_code(response,201)
     data=response.json()
@@ -70,13 +68,7 @@ def test_user_post(base_url,api_session,file_path):
     assert_status_code(highest_user_response,200)
     test_id_high = highest_user_response.json()
     highest_id=max(test_id_high, key=lambda test_id_high: test_id_high["id"])
-    assert data["id"] == highest_id["id"]+1
-
-
-
-
-
-
+    assert data["id"] == highest_id["id"]+1 #for jsonplaceholder.com POST isn't saved but still nice to have
 
 
 #             payload = json.load(file)
@@ -119,5 +111,19 @@ def test_user_post(base_url,api_session,file_path):
     #test_id_high = highest_user_response.json()
     #highest_id=max(test_id_high, key=lambda test_id_high: test_id_high["id"])
     #assert data["id"] == highest_id["id"]+1
+
+@pytest.mark.parametrize("user_id", [("1"), ("2"), ("3"), ("4")])
+
+def test_user_delete(base_url, api_session,user_id):
+    user_api=UsersApi(base_url, api_session)
+    response=user_api.delete_user(user_id)
+    assert_status_code(response, 200)
+
+
+
+
+
+
+
 
 

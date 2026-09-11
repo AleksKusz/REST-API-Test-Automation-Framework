@@ -1,6 +1,7 @@
 import pytest
 import os   
 import requests
+import json
 
 @pytest.fixture
 def base_url():
@@ -13,3 +14,10 @@ def api_session():
 
     yield api_session
     api_session.close()
+
+
+@pytest.fixture
+def user_payload(file_path):
+    with open(f"test_data/{file_path}") as file:
+            payload = json.load(file)
+            return payload
