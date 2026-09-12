@@ -204,54 +204,7 @@ The workflow:
 6. generates a JUnit XML report
 7. uploads the test report as a GitHub Actions artifact
 
-Workflow configuration:
 
-```text
-.github/workflows/tests.yml
-```
 
-## Example API Client
-
-The test code uses API client classes so HTTP request logic is separated from test assertions.
-
-Example:
-
-```python
-class UsersApi:
-    def __init__(self, base_url, api_session, timeout=10):
-        self.base_url = base_url
-        self.api_session = api_session
-        self.timeout = timeout
-
-    def get_user(self, user_id):
-        return self.api_session.get(
-            f"{self.base_url}users/{user_id}",
-            timeout=self.timeout,
-        )
-```
-
-A test can then focus on behavior:
-
-```python
-def test_user_schema_validation(base_url, api_session, user_id, expected_status):
-    user_api = UsersApi(base_url, api_session)
-
-    response = user_api.get_user(user_id)
-
-    assert_status_code(response, expected_status)
-    assert_json_content_type(response)
-
-    validate(
-        instance=response.json(),
-        schema=user_schema,
-        format_checker=FormatChecker(),
-    )
-```
-
-## About JSONPlaceholder
-
-JSONPlaceholder is a fake REST API intended for testing and prototyping.
-
-Write operations such as `POST`, `PUT`, and `DELETE` return simulated responses but do not permanently modify the server data. Tests in this repository are written with that behavior in mind.
 
 
