@@ -22,10 +22,8 @@ post_user_schema = {
                         "lat": {"type": "string"},
                         "lng": {"type": "string"},
                     },
-                    "optional": ["lat", "lng"],
                 },
             },
-            "optional": ["street", "suite", "city", "zipcode", "geo"],
         },
         "phone": {"type": "string"},
         "website": {"type": "string"},
@@ -37,7 +35,6 @@ post_user_schema = {
                 "catchPhrase": {"type": "string"},
                 "bs": {"type": "string"},
             },
-            "optional": ["name", "catchPhrase", "bs"],
         },
     },
     "required": [
@@ -46,10 +43,5 @@ post_user_schema = {
         "username",
         "email"
     ],
-    "optional": [
-        "address",
-        "phone",
-        "website",
-        "company"
-    ]
+
 }

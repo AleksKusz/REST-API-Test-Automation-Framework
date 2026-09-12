@@ -6,5 +6,5 @@ def assert_json_content_type(response):
     assert "application/json" in content_type.lower(), (f"Expected JSON content type, but got {content_type!r}"
     )
 
-def assert_type(response,type):
-    assert isinstance(response,type), f"Expected type {type}, but got {type(response)}"
+def assert_type(response,expected_type):
+    assert isinstance(response,expected_type), f"Expected type {expected_type}, but got {expected_type(response)}"

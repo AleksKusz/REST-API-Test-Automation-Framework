@@ -26,3 +26,11 @@ Thumbs.db
 build/
 dist/
 *.egg-info/
+
+# Test reports
+reports/
+test-results/
+
+# Leftover code
+leftover_code/
+leftover_code.py

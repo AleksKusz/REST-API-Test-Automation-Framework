@@ -6,6 +6,11 @@ from api.users_api import UsersApi
 from utils.assertions import assert_status_code, assert_json_content_type, assert_type
 from utils.exceptions import InvalidPostUserError
 
+pytestmark = [
+    pytest.mark.api,
+    pytest.mark.regression,
+]
+@pytest.mark.smoke
 @pytest.mark.parametrize("post_id", range(1,10))
 def test_get_post(base_url,api_session, post_id):
     post_api=PostApi(base_url,api_session)
@@ -14,7 +19,8 @@ def test_get_post(base_url,api_session, post_id):
     assert_json_content_type(response)
     data=response.json()
     validate(instance=data, schema=post_schema)
-
+    
+@pytest.mark.smoke
 def test_get_posts(base_url,api_session):
     post_api=PostApi(base_url,api_session)
     response=post_api.get_posts()
@@ -39,7 +45,6 @@ def test_post_post(base_url,api_session,post_payload):
     id_list=set()
     for item in data_user_id:
         id_list.add(item["id"])
-    print(id_list)
 
     if post_payload['userId'] in id_list:
         response=post_api.post_post(post_payload)
@@ -83,12 +88,6 @@ def test_delete_post(base_url, api_session):
 
     assert_status_code(response, 200)
     assert_json_content_type(response)
-
-#def test_request_timeout(base_url, api_session):
-#    post_api = PostApi(base_url, api_session, timeout=0.0001)
-#
-#    with pytest.raises(requests.exceptions.Timeout) as error:
-#        post_api.get_post(1)
 
 def test_request_timeout(base_url, api_session, monkeypatch):
     post_api = PostApi(base_url, api_session, timeout=0.0001)
