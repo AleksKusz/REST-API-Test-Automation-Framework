@@ -30,3 +30,10 @@ def user_payload():
 
 #######################################
 
+@pytest.fixture
+def post_payload():
+    with open(f"test_data/posts.json") as file:
+            payload = json.load(file)
+            return payload
+
+
