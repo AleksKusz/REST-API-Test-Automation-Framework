@@ -1,7 +1,7 @@
 import pytest, requests, json, logging
 from jsonschema import ValidationError, validate, FormatChecker
 from schemas.user_schema import user_schema
-from schemas.post_user_schema import put_user_schema
+from schemas.post_user_schema import post_user_schema
 from api.users_api import UsersApi
 from utils.assertions import assert_status_code, assert_json_content_type, assert_type
 
@@ -61,11 +61,11 @@ def test_user_post(base_url,api_session,file_path, user_payload_mark):
         validate(instance=data, schema=user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
 
     if file_path=="post_user.json":
-        validate(instance=data, schema=put_user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
+        validate(instance=data, schema=post_user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
 
     if file_path=="wrong_user.json":
         with pytest.raises(ValidationError):
-            validate(instance=data, schema=put_user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
+            validate(instance=data, schema=post_user_schema, format_checker=FormatChecker()) #email checked by FormatChecker()
 
     highest_user_response=user_api.get_users()
     assert_status_code(highest_user_response,200)
@@ -121,12 +121,37 @@ def test_user_delete(base_url, api_session,user_id):
     user_api=UsersApi(base_url, api_session)
     response=user_api.delete_user(user_id)
     assert_status_code(response, 200)
+    assert_json_content_type(response)
 
 @pytest.mark.parametrize("params", [{"username": "Bret"}]) 
 def test_get_param_user(base_url, api_session,params):
     user_api=UsersApi(base_url, api_session)
     response=user_api.get_users(params=params) #can search for any value using params value
-    print(response.json())
+    data=response.json()
+    
+    assert data, "No user returned" #FILTERING RETURNS A LIST!
+    assert_json_content_type(response)
+    assert all(user["username"] == params["username"] for user in data) #FILTERING RETURNS A LIST!
+
+
+def test_put_user(base_url, api_session,user_payload):
+    user_api=UsersApi(base_url, api_session)
+    response_before=user_api.get_user(1)
+  
+    response=user_api.put_user(1,user_payload)
+    data=response.json()
+    data_before=response_before.json()
+    validate(instance=data, schema=user_schema, format_checker=FormatChecker())
+    validate(instance=data_before, schema=user_schema, format_checker=FormatChecker())
+    assert_status_code(response,200)
+    assert_json_content_type(response)
+    assert data["id"]==1
+    assert data["name"]!=data_before["name"]
+    assert data["username"]!=data_before["username"]
+    print(data)
+
+
+
 
 
 

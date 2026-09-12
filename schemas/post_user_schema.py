@@ -1,4 +1,4 @@
-put_user_schema = {
+post_user_schema = {
     "title": "User",
     "type": "object",
     "additionalProperties": False,
