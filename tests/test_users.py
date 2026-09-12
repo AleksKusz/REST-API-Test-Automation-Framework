@@ -1,4 +1,4 @@
-import pytest, requests, json, logging
+import pytest, requests, json
 from jsonschema import ValidationError, validate, FormatChecker
 from schemas.user_schema import user_schema
 from schemas.post_user_schema import post_user_schema
