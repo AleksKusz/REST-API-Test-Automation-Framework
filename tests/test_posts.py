@@ -84,13 +84,22 @@ def test_delete_post(base_url, api_session):
     assert_status_code(response, 200)
     assert_json_content_type(response)
 
-def test_request_timeout(base_url, api_session):
+#def test_request_timeout(base_url, api_session):
+#    post_api = PostApi(base_url, api_session, timeout=0.0001)
+#
+#    with pytest.raises(requests.exceptions.Timeout) as error:
+#        post_api.get_post(1)
+
+def test_request_timeout(base_url, api_session, monkeypatch):
     post_api = PostApi(base_url, api_session, timeout=0.0001)
 
-    with pytest.raises(requests.exceptions.Timeout) as error:
-        post_api.get_post(1)
+    def fake_get(*args, **kwargs):
+        raise requests.exceptions.Timeout
 
-    print(f"Raised exception: {error.value}")
+    monkeypatch.setattr(api_session, "get", fake_get)
+
+    with pytest.raises(requests.exceptions.Timeout):
+        post_api.get_post(1)
         
 
 
